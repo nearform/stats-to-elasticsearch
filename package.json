@@ -1,0 +1,15 @@
+{
+  "name": "stats-to-elasticsearch",
+  "version": "1.0.0",
+  "description": "Collect and send stats about your node.js process to elasticsearch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "elasticsearch": "^13.2.0",
+    "lodash": "^4.17.4"
+  }
+}
