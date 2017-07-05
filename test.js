@@ -5,5 +5,6 @@ statsToElasticSearch() // start it running
 const http = require('http')
 
 http.createServer((req, res) => {
-  res.end('hello world')
+  res.write('hello world')
+  res.end()
 }).listen(4001)
