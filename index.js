@@ -2,7 +2,6 @@
 
 const StatsProducer = require('stats')
 const ElasticSearch = require('elasticsearch')
-const initialiseDashboard = require('./initialiseDashboard')
 const _ = require('lodash')
 
 const defaultElasticSearchOpts = {
@@ -22,7 +21,7 @@ function StatsToElasticSearch (elasticSearchOpts, statsOpts) {
     const body = this._formatStats(stats)
 
     this._esClient.bulk({ body }, function (err) {
-      if (err) console.error(err)
+      if (err) console.error('error emitting stats:', err)
     })
   })
 
@@ -34,17 +33,21 @@ function StatsToElasticSearch (elasticSearchOpts, statsOpts) {
     this._statsProducer.stop()
   }
 
-  this.initialiseDashboardIfNeeded = () => initialiseDashboard(this._esClient)
-
   this._formatStats = (stats) => {
+    const meta = {
+      timestamp: stats.timestamp,
+      pid: stats.process.pid,
+      title: stats.process.title,
+      tags: stats.tags
+    }
     return [
       { index: { _index: 'node-stats', _type: 'process' } },
-      Object.assign({}, { timestamp: stats.timestamp }, stats.process),
+      Object.assign({}, { meta }, stats.process),
       { index: { _index: 'node-stats', _type: 'system' } },
-      Object.assign({}, { timestamp: stats.timestamp }, stats.system),
+      Object.assign({}, { meta }, stats.system),
       { index: { _index: 'node-stats', _type: 'eventloop' } },
-      Object.assign({}, { timestamp: stats.timestamp }, stats.eventLoop)
-    ].concat(_.flatMap(stats.gcRuns, (run) => [ { index: { _index: 'node-stats', _type: 'gc' } }, run ]))
+      Object.assign({}, { meta }, stats.eventLoop)
+    ].concat(_.flatMap(stats.gcRuns, (run) => [ { index: { _index: 'node-stats', _type: 'gc' } }, Object.assign({}, run, {meta}) ]))
   }
 }
 

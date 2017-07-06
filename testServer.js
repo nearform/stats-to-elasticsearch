@@ -1,7 +1,7 @@
-const statsToElasticSearch = require('./')
+const StatsToElasticSearch = require('./')
 
-statsToElasticSearch() // start it running
-
+const statsToElasticSearch = new StatsToElasticSearch({}, {tags: ['server', 'test']}) // start it running
+statsToElasticSearch.start()
 const http = require('http')
 
 http.createServer((req, res) => {
