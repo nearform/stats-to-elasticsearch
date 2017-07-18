@@ -1,6 +1,6 @@
 'use strict'
 
-const StatsProducer = require('stats')
+const StatsProducer = require('@nearform/stats')
 const ElasticSearch = require('elasticsearch')
 const _ = require('lodash')
 

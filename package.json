@@ -19,7 +19,7 @@
   "author": "Glen Keane",
   "license": "Apache-2.0",
   "dependencies": {
-    "@nearform/stats": "0.0.1",
+    "@nearform/stats": "^0.0.1",
     "elasticsearch": "^13.2.0",
     "lodash": "^4.17.4"
   },
