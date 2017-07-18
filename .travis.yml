@@ -1,0 +1,23 @@
+language: node_js
+sudo: required
+services:
+  - docker
+node_js:
+  - "4"
+  - "6"
+  - "7"
+  - "node"
+env:
+  - CC=gcc-4.8 CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+script:
+  - docker-compose build
+  - docker-compose up -d
+  - npm test
+  - docker-compose down
