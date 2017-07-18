@@ -1,5 +1,7 @@
 # stats-to-elasticsearch
 
+[![Build Status](https://travis-ci.org/nearform/stats-to-elasticsearch.svg?branch=master)](https://travis-ci.org/nearform/stats-to-elasticsearch)
+
 Collect and send [stats](http://github.com/nearform/stats) about your node.js process to elasticsearch.
 
 This module exposes a function which initialises a connection to elasticsearch and creates a stats event emitter to gather stats to be sent via the connection.
