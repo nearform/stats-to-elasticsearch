@@ -19,7 +19,7 @@ function StatsToElasticSearch (opts) {
   }
 
   this._statsProducer = new StatsProducer(opts.statsConfig)
-  this._esClient = new ElasticSearch.Client(Object.assign({}, defaultElasticSearchOpts, opts.elasticSearchConfig))
+  this._esClient = new ElasticSearch.Client(Object.assign({}, defaultElasticSearchOpts, opts.elasticsearchConfig))
 
   this._statsProducer.on('stats', (stats) => {
     const body = this._formatStats(stats)
