@@ -1,6 +1,6 @@
 {
   "name": "@nearform/stats-to-elasticsearch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Collect and send stats about your node.js process to elasticsearch",
   "main": "index.js",
   "scripts": {
