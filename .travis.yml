@@ -24,5 +24,6 @@ addons:
 script:
   - docker-compose build
   - docker-compose up -d
+  - sleep 30 # allow time for es to start
   - npm test
   - docker-compose down
