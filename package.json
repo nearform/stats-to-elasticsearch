@@ -6,7 +6,8 @@
   "scripts": {
     "precommit": "npm test",
     "pretest": "standard",
-    "test": "tape ./test/*.test.js | tap-spec"
+    "test": "tape ./test/*.test.js | tap-spec",
+    "initialise-dashboard": "initialise-dashboard -c ./dashboard.js"
   },
   "keywords": [
     "Probe",

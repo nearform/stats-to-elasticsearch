@@ -6,16 +6,20 @@ const _ = require('lodash')
 
 const defaultElasticSearchOpts = {
   host: 'localhost:9200',
-  log: 'info'
+  log: 'error',
+  maxRetries: Number.MAX_SAFE_INTEGER,
+  sniffOnStart: true,
+  keepAlive: true,
+  sniffOnConnectionFault: true
 }
 
-function StatsToElasticSearch (elasticSearchOpts, statsOpts) {
+function StatsToElasticSearch (opts) {
   if (!(this instanceof StatsToElasticSearch)) {
-    return new StatsToElasticSearch(elasticSearchOpts, statsOpts)
+    return new StatsToElasticSearch(opts)
   }
 
-  this._statsProducer = new StatsProducer(statsOpts)
-  this._esClient = new ElasticSearch.Client(Object.assign({}, elasticSearchOpts, defaultElasticSearchOpts))
+  this._statsProducer = new StatsProducer(opts.statsConfig)
+  this._esClient = new ElasticSearch.Client(Object.assign({}, defaultElasticSearchOpts, opts.elasticSearchConfig))
 
   this._statsProducer.on('stats', (stats) => {
     const body = this._formatStats(stats)
@@ -36,18 +40,25 @@ function StatsToElasticSearch (elasticSearchOpts, statsOpts) {
   this._formatStats = (stats) => {
     const meta = {
       timestamp: stats.timestamp,
+      id: stats.id,
+      tags: stats.tags,
       pid: stats.process.pid,
-      title: stats.process.title,
-      tags: stats.tags
+      hostname: stats.system.hostname
     }
+    stats.process.meta = meta
+    stats.system.meta = meta
+    stats.eventLoop.meta = meta
     return [
       { index: { _index: 'node-stats', _type: 'process' } },
-      Object.assign({}, { meta }, stats.process),
+      stats.process,
       { index: { _index: 'node-stats', _type: 'system' } },
-      Object.assign({}, { meta }, stats.system),
+      stats.system,
       { index: { _index: 'node-stats', _type: 'eventloop' } },
-      Object.assign({}, { meta }, stats.eventLoop)
-    ].concat(_.flatMap(stats.gcRuns, (run) => [ { index: { _index: 'node-stats', _type: 'gc' } }, Object.assign({}, run, {meta}) ]))
+      stats.eventLoop
+    ].concat(_.flatMap(stats.gcRuns, (run) => {
+      run.meta = meta
+      return [ { index: { _index: 'node-stats', _type: 'gc' } }, run ]
+    }))
   }
 }
 
