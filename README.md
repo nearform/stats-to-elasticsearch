@@ -6,9 +6,13 @@ Collect and send [stats](http://github.com/nearform/stats) about your node.js pr
 
 This module exposes a function which initialises a connection to elasticsearch and creates a stats event emitter to gather useful in process stats to be sent via the connection.
 
-The purpose of this module is to make it easy to connect your node.js servers to kibana for visualisation of runtime stats. Below is a screenshot of the dashboard which you can easily create using a combination of this module and the [create-stats-dashboard](http://github.com/nearform/create-stats-dashboard) tool with Kibana and Elasticsearch.
+## Intro to the nearform stats tooling
+
+Created with the purpose to make creating visualisations about your process easy. At nearform, we achieve this using the modules [stats](http://github.com/nearform/stats), [stats-to-elasticsearch](http://github.com/nearform/stats-to-elasticsearch) and [create-stats-dashboard](http://github.com/nearform/create-stats-dashboard). This makes it very easy to collect process stats in elasticsearch and visualise them in a dashboard in kibana, similar to that below:
 
 <img src='./assets/dashboard-screenshot.png' alt='a kibana stats dashboard screenshot'>
+
+Once your dashboard is setup with create-stats-dashboard, all you should need to do is require the stats-to-elasticsearch module and point it at the dashboard to get cool (and useful) visualisations!
 
 ## Installation
 
@@ -79,6 +83,11 @@ statsToElastic.reconnect()
 
 Reconnects to elasticsearch if no longer connected. NOTE: this doesn't call start, so call `start()` yourself if you need to.
 
+## Useful links
+
+- [stats](http://github.com/nearform/stats) - makes generating the stats to be visualised a breeze!
+- [stats-to-elasticsearch](http://github.com/nearform/stats-to-elasticsearch) - makes sending the stats to es a breeze!
+- [create-stats-dashboard](http://github.com/nearform/create-stats-dashboard) - makes creating your kibana dashboard a breeze!
 
 ## License
 
