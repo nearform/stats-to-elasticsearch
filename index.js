@@ -16,10 +16,11 @@ const defaultElasticSearchOpts = {
   sniffOnConnectionFault: true
 }
 
-function StatsToElasticSearch (opts = {}) {
+function StatsToElasticSearch (paramOpts) {
   if (!(this instanceof StatsToElasticSearch)) {
-    return new StatsToElasticSearch(opts)
+    return new StatsToElasticSearch(paramOpts)
   }
+  const opts = paramOpts || {}
   const esOpts = Object.assign({}, defaultElasticSearchOpts, opts.elasticsearchConfig)
 
   this._statsProducer = new StatsProducer(opts.statsConfig)
