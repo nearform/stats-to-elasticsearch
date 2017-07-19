@@ -4,8 +4,11 @@ const StatsProducer = require('@nearform/stats')
 const ElasticSearch = require('elasticsearch')
 const _ = require('lodash')
 
+const defaultEsHost = process.env.ES_HOST || 'localhost'
+const defaultEsPort = process.env.ES_PORT || '9200'
+
 const defaultElasticSearchOpts = {
-  host: 'localhost:9200',
+  host: `${defaultEsHost}:${defaultEsPort}`,
   log: 'error',
   maxRetries: Number.MAX_SAFE_INTEGER,
   sniffOnStart: true,
@@ -13,28 +16,58 @@ const defaultElasticSearchOpts = {
   sniffOnConnectionFault: true
 }
 
-function StatsToElasticSearch (opts) {
+function StatsToElasticSearch (opts = {}) {
   if (!(this instanceof StatsToElasticSearch)) {
     return new StatsToElasticSearch(opts)
   }
+  const esOpts = Object.assign({}, defaultElasticSearchOpts, opts.elasticsearchConfig)
 
   this._statsProducer = new StatsProducer(opts.statsConfig)
-  this._esClient = new ElasticSearch.Client(Object.assign({}, defaultElasticSearchOpts, opts.elasticsearchConfig))
+  this._esClient = new ElasticSearch.Client(esOpts)
 
   this._statsProducer.on('stats', (stats) => {
     const body = this._formatStats(stats)
 
     this._esClient.bulk({ body }, function (err) {
-      if (err) console.error('error emitting stats:', err)
+      if (err) console.error('Error emitting stats:', err)
     })
   })
 
+  // start emitting stats
+  this._statsProducer.start()
+
+  this.__emitting = true
+  this.__open = true
+
   this.start = () => {
-    this._statsProducer.start()
+    if (!this.__emitting) {
+      this._statsProducer.start()
+      this.__emitting = true
+    }
   }
 
   this.stop = () => {
-    this._statsProducer.stop()
+    if (this.__emitting) {
+      this._statsProducer.stop()
+      this.__emitting = false
+    }
+  }
+
+  this.close = () => {
+    if (this.__emitting) {
+      this._statsProducer.stop()
+      this.__emitting = false
+    }
+    if (this.__open) {
+      this._esClient.close()
+      this.__open = false
+    }
+  }
+
+  this.reconnect = () => {
+    if (!this.__open) {
+      this._esClient = new ElasticSearch.Client(esOpts)
+    }
   }
 
   this._formatStats = (stats) => {
@@ -63,3 +96,8 @@ function StatsToElasticSearch (opts) {
 }
 
 module.exports = StatsToElasticSearch
+
+// check if preloaded and instantiate the connection
+if (module.parent.id === 'internal/preload') {
+  StatsToElasticSearch()
+}

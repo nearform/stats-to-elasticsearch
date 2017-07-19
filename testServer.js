@@ -1,11 +1,16 @@
-const StatsToElasticSearch = require('./')
-
-const statsToElasticSearch = new StatsToElasticSearch({}, {tags: ['server', 'test']}) // start it running
-statsToElasticSearch.start()
+// const StatsToElasticSearch = require('./')
+// const statsToElasticSearch = new StatsToElasticSearch({statsConfig: {tags: ['server', 'test']}}) // start it running
 
 const http = require('http')
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   res.write('hello world')
   res.end()
-}).listen(4001, () => console.log('listening on port 4001'))
+})
+
+server.listen(4001, () => console.log('listening on port 4001'))
+
+// setTimeout(() => {
+//   statsToElasticSearch.close()
+//   server.close()
+// }, 4000)
